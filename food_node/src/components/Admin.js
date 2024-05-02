@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
-import Navbar from '../components/Navbar.js';
+// import Navbar from '../components/Navbar.js';
 
 export const Admin = () => {
   const [menuitems, setmenuitems] = useState([]);
@@ -13,7 +13,7 @@ export const Admin = () => {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/menuitem/findAll');
+      const response = await axios.get('http://localhost:8080/menuitem');
       setmenuitems(response.data);
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -34,17 +34,12 @@ export const Admin = () => {
   
 
   return (
-    <div className='' style={{ 
-      backgroundImage: "url('https://img.freepik.com/premium-photo/food-cooking-background-stone-texture-with-sea-salt-pepper-garlic-parsley-light-grey-abstract-food-background-empty-space-text-can-be-used-food-posters-design-menu-top-view_253362-16400.jpg?w=2000')",
-      backgroundPosition: 'center',
-      backgroundSize: 'cover', // This ensures the image covers the entire background
-      backgroundRepeat: 'no-repeat' // This ensures the image is not repeated
-    }}>
-      <Navbar />
+    <div>
+   
       <br></br><br></br>
-      <h1 className='text-center'>Admin Page</h1>
+      {/* <h1 className='text-center'>Admin Page</h1> */}
       <div className='d-grid gap-2 d-md-flex justify-content-md-center'>
-        <Link className="btn btn-center btn-primary addpro" to="/add">Add Product</Link>
+        {/* <Link className="btn btn-center btn-primary addpro" to="/add">Add Product</Link> */}
       </div> <br></br>
       <table className="table table-hover table-bordered border-success container" >
         <thead>
@@ -67,7 +62,7 @@ export const Admin = () => {
               <td>{menuitem.description}</td>
               <td>{menuitem.price}</td>
               {/* <td>{menuItem.menuItem}</td> */}
-              <td> <img src={`http://localhost:8080/public/data/uploads/${menuitem.image}`} alt={menuitem.name} style={{ width: '100px', height: 'auto' }} /></td>
+              <td> <img src={`http://localhost:8080/public/data/uploads/${menuitem.image}`} alt={menuitem.name} style={{ width: '50px', height: '50px' }} /></td>
               <td>
                 <Link className='btn btn-outline-success' to={`/update/${menuitem._id}`}>Edit</Link>
               </td>
