@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar.js';
+import { Link } from 'react-router-dom';
+import { FaShoppingCart } from 'react-icons/fa'; // Import the cart icon
 
 export const AllUser = () => {
   const [menuItems, setmenuItems] = useState([]);
-  const [categories, setCategories] = useState(['Appetizers', 'Main Course', 'Desserts', 'Cake']);
+  const [categories, setCategories] = useState([ 'Veg', 'Desserts', 'Non-Veg']);
   const [selectedCategory, setSelectedCategory] = useState('');
-
   const [setFurniture, setSelectedFurniture] = useState('');
+  const userId = sessionStorage.getItem('userId');
 
   const handleSelectChange = (event) => {
     const category = event.target.value;
     setSelectedCategory(category);
-    console.log("sUBMIT", category)
-    // Call handleSubmit immediately when the category changes
     handleSubmit(category);
   };
 
@@ -30,7 +30,6 @@ export const AllUser = () => {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         setSelectedFurniture(data);
       })
       .catch((error) => {
@@ -39,15 +38,33 @@ export const AllUser = () => {
   };
 
   useEffect(() => {
-    // Initial fetch when the component mounts
     handleSubmit(selectedCategory);
-  }, [selectedCategory]); // Call useEffect whenever selectedCategory changes
+  }, [selectedCategory]);
+
+  const CartSend = async (formData) => {
+    try {
+      const response = await axios.post('http://localhost:8080/addcart', {
+        userId: userId,
+        menuItemId: formData,
+        quantity: 1
+      });
+      alert("Product added to cart successfully..!");
+      // Redirect to add to cart page after successful addition to cart
+      window.location.href = "/"; // Replace "/add-to-cart" with your actual route
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  };
 
   return (
     <div> 
       <Navbar />
       <br /><br />
       <div className="container mt-4">
+        {/* Cart icon with Link to AddToCart page */}
+        <Link to="/addtocart" style={{ float: 'right', marginRight: '10px' }}>
+          <FaShoppingCart style={{ fontSize: '24px', cursor: 'pointer' }} />
+        </Link>
         {/* Dropdown menu for categories */}
         <div className="row">
           <div className="col-md-6">
@@ -55,9 +72,9 @@ export const AllUser = () => {
             <div className="custom-select" style={customSelectStyle}>
               <select id="category" value={selectedCategory} onChange={handleSelectChange} style={selectStyle}>
                 <option value="">All</option>
-                <option>Desserts</option>
-                <option>Veg</option>
-                <option>Non-Veg</option>
+                {categories.map((category, index) => (
+                  <option key={index}>{category}</option>
+                ))}
               </select>
               <span className="custom-arrow" style={arrowStyle}></span> {/* Custom arrow */}
             </div>
@@ -66,7 +83,7 @@ export const AllUser = () => {
         <br />
         <div className="row">
           {/* Render menu items based on selected category */}
-         {Array.isArray(setFurniture)&& setFurniture.map((menuitem,index)=> (
+          {Array.isArray(setFurniture) && setFurniture.map((menuitem, index) => (
             <div key={index} className="col-lg-3 col-md-4 col-sm-6 mb-3" style={{ animation: `fadeIn 0.5s ${index * 0.1}s ease-in-out forwards` }}>
               <div className="card card-body-hover" style={menuItemStyle}>
                 <img src={`http://localhost:8080/public/data/uploads/${menuitem.image}`} className="card-img-top card-body-hover" alt={menuitem.menuname} style={{ height: '200px', objectFit: 'cover' }} />
@@ -74,7 +91,11 @@ export const AllUser = () => {
                   <h6 className="card-title" style={{ fontSize: '1rem' }}>{menuitem.menuname}</h6>
                   <p className="card-text" style={{ fontSize: '0.8rem' }}>{menuitem.description}</p>
                   <p className="card-text" style={{ fontSize: '0.8rem' }}>Price: ${menuitem.price}</p>
-                  <button className='btn btn-success'>Add to Cart </button>
+                  {userId ? (
+                    <button onClick={() => CartSend(menuitem._id)} style={{ borderRadius: '10px', padding: '5px', width: '100%' }}>Add to Cart</button>
+                  ) : (
+                    <Link to={`/login`}><button style={{ borderRadius: '10px', padding: '5px', width: '100%' }}>Login to Add to Cart</button></Link>
+                  )}
                 </div>
               </div>
             </div>
@@ -97,11 +118,17 @@ const selectStyle = {
   width: '100%',
   padding: '10px',
   border: '1px solid #ccc',
-  borderRadius: '5px',
+  borderRadius: '10px', // Increase border radius here
   backgroundColor: '#fff',
-  appearance: 'none', /* Remove default arrow */
+  appearance: 'none',
 };
 
+const menuItemStyle = {
+  transition: 'transform 0.2s ease-in-out',
+  cursor: 'pointer',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 1)',
+  borderRadius: '10px', // Increase border radius here
+};
 const arrowStyle = {
   position: 'absolute',
   top: '50%',
@@ -113,13 +140,7 @@ const arrowStyle = {
   borderWidth: '5px 5px 0 5px',
   borderColor: '#555 transparent transparent transparent',
 };
-
-const menuItemStyle = {
-  transition: 'transform 0.2s ease-in-out',
-  cursor: 'pointer',
-};
-
-// CSS animation for fade-in effect
+// // CSS animation for fade-in effect
 const fadeInKeyframes = `
   @keyframes fadeIn {
     0% {
@@ -130,6 +151,7 @@ const fadeInKeyframes = `
     }
   }
 `;
+
 
 // Insert the CSS animation keyframes into the document
 const styleSheet = document.styleSheets[0];

@@ -12,9 +12,10 @@ import Admin from './components/Admin.js';
 import Addproduct from './components/Addproduct.js';
 import Update from './components/Update.js'
 import Contact from './components/Contact.js'
-import AddToCart from './components/AddToCart.js';
+import AddCart from './components/AddCart.js';
 import UserAdmin from './components/UserAdmin.js';
 import Dash from './components/Dash.js';
+import Payment from './components/Payment.js'
 
 function App() {
   return (
@@ -32,9 +33,10 @@ function App() {
       {/* <Route path="/delete" element={<Delete />}></Route> */}
       <Route path="/update/:menuItemId" element={<Update />}></Route>
       <Route path='/contact' element={<Contact />}></Route>
-      <Route path='/addtocart' element={<AddToCart />}></Route>
+      <Route path='/addtocart' element={<AddCart />}></Route>
       <Route path='/useradmin'element={<UserAdmin />}></Route>
       <Route path='/dash' element={<Dash />}></Route>
+      <Route path='/payment/:totalPrice' element={<Payment />}></Route>
       </Routes>
       </BrowserRouter>
     </div>
